@@ -1,0 +1,139 @@
+{% extends "bootstrap.html" %}
+
+{% block content %}
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+	<div class="container">
+		<div class="navbar-header">
+			<button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
+				<span class="sr-only">Toggle Navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="/">Raspinfo</a>
+		</div>
+		<div class="collapse navbar-collapse">
+			<ul class="nav navbar-nav">
+				<li><a href="/overview">Overview</a></li>
+				<li class="active"><a href="/detail">Detail</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+<div class="container page-detail">
+	<div class="row">
+		<div class="col-xs-3"><span class="glyphicon glyphicon-cog"></span> <strong>System</strong></div>
+		<div class="col-xs-9">
+			<strong>Hostname</strong> : {{ rpi.hostname() }}<br>
+			<strong>Distribution</strong> : {{ rpi.distribution() }}<br>
+			<strong>Kernel</strong> : {{ rpi.kernel() }}<br>
+			<strong>Firmware</strong> : {{ rpi.firmware() }}
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-xs-3"><span class="glyphicon glyphicon-time"></span> <strong>Uptime</strong></div>
+		<div class="col-xs-9">{{ uptime.uptime() }}</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-xs-6 col-sm-3">
+			<span class="glyphicon glyphicon-asterisk"></span> <strong>RAM</strong>
+			<span class="glyphicon glyphicon-{{ ram.icon }} pull-right"></span>
+		</div>
+		<div class="col-xs-12 col-sm-9">
+			<div class="progress">
+				<div class="progress-bar progress-bar-{{ ram.bar }}" role="progressbar" style="width:{{ ram.percentage }}%">
+					{{ ram.percentage }} %
+				</div>
+			</div>
+			Free : <span class="text-success">{{ ram.free }} MB</span> &middot; Used : <span class="text-warning">{{ ram.used }} MB</span> &middot; Total : {{ ram.total }} MB
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-xs-6 col-sm-3">
+			<span class="glyphicon glyphicon-refresh"></span> <strong>Swap</strong>
+			<span class="glyphicon glyphicon-{{ swap.icon }} pull-right"></span>
+		</div>
+		<div class="col-xs-12 col-sm-9">
+			<div class="progress">
+				<div class="progress-bar progress-bar-{{ swap.bar }}" role="progressbar" style="width:{{ swap.percentage }}%">
+					{{ swap.percentage }} %
+				</div>
+			</div>
+			Free : <span class="text-success">{{ swap.free }}MB</span> &middot; Used : <span class="text-warning">{{ swap.used }}MB</span> &middot; Total : {{ swap.total }}MB
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-xs-6 col-sm-3">
+			<span class="glyphicon glyphicon-tasks"></span> <strong>CPU Load</strong>
+			<span class="glyphicon glyphicon-{{ cpu.icon }} pull-right"></span>
+		</div>
+		<div class="col-xs-12 col-sm-9">
+			<strong>Load average</strong> : {{ cpu.load }} &middot; {{ cpu.load5 }} &middot; {{ cpu.load15 }}<br>
+			<strong>Running at</strong> {{ cpu.freq.current }}MHz ({{ cpu.freq.min }}MHz ~ {{ cpu.freq.max}}MHz)<br>
+			<strong>Governor</strong> : <strong>{{ cpu.freq.governor }}</strong>
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-xs-6 col-sm-3">
+			<span class="glyphicon glyphicon-fire"></span> <strong>CPU Temp</strong>
+			<span class="glyphicon glyphicon-{{ cpu_temp.icon }} pull-right"></span>
+		</div>
+		<div class="col-xs-12 col-sm-9">
+			<div class="progress">
+				<div class="progress-bar progress-bar-{{ cpu_temp.bar }}" role="progressbar" style="width:{{ cpu_temp.percentage }}%">
+					{{ cpu_temp.percentage }} %
+				</div>
+			</div>
+			Temp : <span class="text-info">{{ cpu_temp.temp }}°C</span>
+		</div>
+	</div>
+	
+{% for drive in drives %}
+	<div class="row">
+		<div class="col-xs-6 col-sm-3">
+		{% if loop.first %}
+			<span class="glyphicon glyphicon-hdd"></span> <strong>Storage</strong>
+		{% endif %}
+			<span class="glyphicon glyphicon-{{ drive.icon }} pull-right"></span>
+		</div>
+		<div class="col-xs-12 col-sm-9">
+			<span class="glyphicon glyphicon-folder-open"></span> {{ drive.name }}
+			<div class="progress">
+				<div class="progress-bar progress-bar-{{ drive.bar }}" role="progressbar" style="width:{{ drive.percentage }}%">
+					{{ drive.percentage }} %
+				</div>
+			</div>
+			Free : <span class="text-success">{{ drive.free }}B</span> &middot; Used : <span class="text-warning">{{ drive.used }}B</span> &middot; Total : {{ drive.total }}B &middot; Format : {{ drive.format }}
+		</div>
+	</div>
+{% endfor %}
+
+	<div class="row">
+		<div class="col-xs-6 col-sm-3">
+			<span class="glyphicon glyphicon-tasks"></span> <strong>Network</strong>
+			<span class="glyphicon glyphicon-{{ network.icon }} pull-right"></span>
+		</div>
+		<div class="col-xs-12 col-sm-9">
+			<strong>IP</strong> : <span class="text-info">{{ rpi.internal_ip() }}</span> [internal] &middot; <span class="text-info">{{ rpi.external_ip() }}</span> [external]<br>
+			<strong>Received</strong> : {{ ethernet.down }}B &middot; Sent : {{ ethernet.up }}B &middot; Total : {{ ethernet.total }}B<br>
+			<strong>Connections</strong> : {{ network.connections }}
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-xs-6 col-sm-3">
+			<span class="glyphicon glyphicon-user"></span> <strong>Users</strong>
+		</div>
+		<div class="col-xs-12 col-sm-9">
+		{% for user in users %}
+			<span class="text-info">{{ user.user }}</span> since {{ user.date }} from <strong>{{ user.ip }}</strong><br>
+		{% endfor %}
+		</div>
+	</div>
+</div>
+{% endblock %}

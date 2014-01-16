@@ -1,0 +1,11 @@
+@charset "UTF-8";
+
+body { padding-top:80px; }
+
+div.progress { margin-bottom:5px; }
+
+div.page-overview div.row { margin-bottom:20px; }
+	div.page-overview div.row span { margin-bottom:10px; }
+	
+div.page-detail div.row { margin-bottom:10px; }
+	div.page-detail div.row span { margin-bottom:10px; }
